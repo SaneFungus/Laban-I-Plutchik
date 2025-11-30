@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ImproLab: Kontrapunkt 2.0</title>
+    <style>
+        :root {
+            --bg-dark: #121212;
+            --card-bg: #1e1e1e;
+            --text-main: #e0e0e0;
+            --text-sub: #a0a0a0;
+            --accent: #e74c3c;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a2e 100%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            font-weight: 300;
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            color: var(--text-sub);
+            font-size: 0.9rem;
+            margin-bottom: 25px;
+            max-width: 500px;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        /* --- Panel Sterowania --- */
+        .controls {
+            background: #252525;
+            padding: 20px;
+            border-radius: 12px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            margin-bottom: 25px;
+            box-sizing: border-box;
+            border: 1px solid #333;
+        }
+
+        select {
+            width: 100%;
+            padding: 12px;
+            background: #333;
+            color: white;
+            border: 1px solid #444;
+            border-radius: 6px;
+            font-size: 1rem;
+            outline: none;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        select:hover {
+            border-color: #555;
+        }
+
+        button {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: transform 0.1s, box-shadow 0.2s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        button:active {
+            transform: scale(0.97);
+        }
+
+        /* --- Karty Postaci --- */
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 25px;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 0;
+            width: 100%;
+            max-width: 470px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            overflow: hidden;
+            border: 1px solid #2a2a2a;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.2s;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.4);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #2a2a2a, #1e1e1e);
+            padding: 12px;
+            text-align: center;
+            font-size: 1rem;
+            font-weight: bold;
+            color: #888;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border-bottom: 1px solid #333;
+        }
+
+        /* Sekcja Wewnętrzna (Emocja) */
+        .section-emo {
+            padding: 25px 20px;
+            text-align: center;
+            color: #222;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section-emo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .emo-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            opacity: 0.8;
+            font-weight: bold;
+            margin-bottom: 8px;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .emo-value {
+            font-size: 2.5rem;
+            font-weight: 900;
+            text-transform: uppercase;
+            line-height: 1;
+            position: relative;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        /* Wektory Emocjonalne */
+        .emotion-vectors {
+            background: #181818;
+            padding: 15px;
+            margin: 15px;
+            border-radius: 10px;
+            border: 1px solid #2a2a2a;
+        }
+
+        .vectors-title {
+            font-size: 0.7rem;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 12px;
+            text-align: center;
+            letter-spacing: 1px;
+        }
+
+        .vector-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+        }
+
+        .vector-item {
+            background: #222;
+            padding: 8px 6px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #333;
+            transition: all 0.2s;
+        }
+
+        .vector-item:hover {
+            background: #282828;
+            border-color: #444;
+        }
+
+        .vector-label {
+            font-size: 0.6rem;
+            color: #777;
+            text-transform: uppercase;
+            display: block;
+            margin-bottom: 4px;
+            letter-spacing: 0.5px;
+        }
+
+        .vector-value {
+            font-size: 0.85rem;
+            color: #fff;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        /* Sekcja Zewnętrzna (Laban) */
+        .section-body {
+            padding: 20px;
+            background: #1e1e1e;
+            flex-grow: 1;
+        }
+
+        .body-header {
+            text-align: center;
+            font-size: 0.75rem;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: bold;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        /* Grid dla czynników Labana */
+        .laban-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .factor {
+            background: #252525;
+            padding: 10px 5px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #333;
+            transition: all 0.2s;
+        }
+
+        .factor:hover {
+            background: #2a2a2a;
+            border-color: #444;
+        }
+
+        .f-label { 
+            font-size: 0.65rem; 
+            color: #888; 
+            display: block; 
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .f-val { 
+            font-size: 0.95rem; 
+            color: #fff; 
+            font-weight: bold; 
+        }
+
+        /* Wynik Labana (Akcja) */
+        .laban-result {
+            background: linear-gradient(135deg, #2c2c2c, #252525);
+            border: 1px dashed #555;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            margin-top: 15px;
+        }
+
+        .action-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #fff;
+            margin-bottom: 5px;
+            letter-spacing: 2px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .action-desc {
+            font-size: 0.9rem;
+            color: #bbb;
+            font-style: italic;
+        }
+
+        .instruction {
+            padding: 12px;
+            text-align: center;
+            font-size: 0.85rem;
+            color: #888;
+            background: linear-gradient(135deg, #1a1a1a, #181818);
+            border-top: 1px solid #2a2a2a;
+            font-style: italic;
+        }
+
+        /* Kolory Emocji (Plutchik) - Zaktualizowane */
+        .c-radosc { 
+            background: linear-gradient(135deg, #FFD700, #FFA500); 
+            color: #333 !important;
+        }
+        .c-zaufanie { 
+            background: linear-gradient(135deg, #9ACD32, #7CB342);
+            color: #333 !important;
+        }
+        .c-strach { 
+            background: linear-gradient(135deg, #2E8B57, #1B5E3F); 
+            color: white !important; 
+        }
+        .c-zdziwienie { 
+            background: linear-gradient(135deg, #00BFFF, #0288D1);
+            color: white !important;
+        }
+        .c-smutek { 
+            background: linear-gradient(135deg, #4169E1, #3949AB); 
+            color: white !important; 
+        }
+        .c-wstret { 
+            background: linear-gradient(135deg, #9370DB, #7B1FA2);
+            color: white !important;
+        }
+        .c-gniew { 
+            background: linear-gradient(135deg, #DC143C, #B71C1C); 
+            color: white !important; 
+        }
+        .c-oczekiwanie { 
+            background: linear-gradient(135deg, #FF8C00, #F57C00);
+            color: #333 !important;
+        }
+
+        /* Separator wizualny */
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #444, transparent);
+            margin: 15px 20px;
+        }
+
+        /* Responsywność */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .card {
+                max-width: 100%;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+
+            .vector-grid {
+                grid-template-columns: 1fr;
+                gap: 6px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+    <h1>ImproLab: Kontrapunkt 2.0</h1>
+    <div class="subtitle">
+        Generator dysonansu psychofizycznego.<br>
+        <strong>Synteza emocji Plutchika z ruchami Labana.</strong><br>
+        Zadanie wewnętrzne (emocja) vs Ekspresja zewnętrzna (ruch).
+    </div>
+
+    <div class="controls">
+        <label style="font-size: 0.8rem; color: #888; margin-bottom: 5px; display:block;">WYBIERZ DYNAMIKĘ RELACJI:</label>
+        <select id="gameMode">
+            <option value="random">CHAOS (Całkowita losowość)</option>
+            <option value="contrast">KONTRAST (Emocje przeciwne)</option>
+            <option value="clock">ZEGAR (Przesunięcie o 1 stopień)</option>
+            <option value="mirror">LUSTRO (Ta sama emocja, inny ruch)</option>
+        </select>
+        <button onclick="generateScenario()">🎭 Generuj Scenę</button>
+    </div>
+
+    <div class="container">
+        <div class="card">
+            <div class="card-header">Postać A</div>
+            
+            <div id="boxEmoA" class="section-emo c-radosc">
+                <div class="emo-label">Stan Wewnętrzny (Emocja)</div>
+                <div class="emo-value" id="txtEmoA">?</div>
+            </div>
+
+            <div class="emotion-vectors">
+                <div class="vectors-title">Wektory Emocjonalne (Zadania)</div>
+                <div class="vector-grid">
+                    <div class="vector-item">
+                        <span class="vector-label">Kierunek</span>
+                        <span class="vector-value" id="vecDirA">—</span>
+                    </div>
+                    <div class="vector-item">
+                        <span class="vector-label">Impuls</span>
+                        <span class="vector-value" id="vecImpA">—</span>
+                    </div>
+                    <div class="vector-item">
+                        <span class="vector-label">Cel</span>
+                        <span class="vector-value" id="vecGoalA">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="section-body">
+                <div class="body-header">Stan Zewnętrzny (Ciało/Laban)</div>
+                
+                <div class="laban-grid">
+                    <div class="factor">
+                        <span class="f-label">CZAS</span>
+                        <span class="f-val" id="qTimeA">—</span>
+                    </div>
+                    <div class="factor">
+                        <span class="f-label">WAGA</span>
+                        <span class="f-val" id="qWeightA">—</span>
+                    </div>
+                    <div class="factor">
+                        <span class="f-label">PRZESTRZEŃ</span>
+                        <span class="f-val" id="qSpaceA">—</span>
+                    </div>
+                </div>
+
+                <div class="laban-result">
+                    <div class="action-name" id="resLabanA">———</div>
+                    <div class="action-desc" id="subLabanA">Kliknij Generuj</div>
+                </div>
+            </div>
+            <div class="instruction" id="instrA">Czekam na instrukcje...</div>
+        </div>
+
+        <div class="card">
+            <div class="card-header">Postać B</div>
+            
+            <div id="boxEmoB" class="section-emo c-smutek">
+                <div class="emo-label">Stan Wewnętrzny (Emocja)</div>
+                <div class="emo-value" id="txtEmoB">?</div>
+            </div>
+
+            <div class="emotion-vectors">
+                <div class="vectors-title">Wektory Emocjonalne (Zadania)</div>
+                <div class="vector-grid">
+                    <div class="vector-item">
+                        <span class="vector-label">Kierunek</span>
+                        <span class="vector-value" id="vecDirB">—</span>
+                    </div>
+                    <div class="vector-item">
+                        <span class="vector-label">Impuls</span>
+                        <span class="vector-value" id="vecImpB">—</span>
+                    </div>
+                    <div class="vector-item">
+                        <span class="vector-label">Cel</span>
+                        <span class="vector-value" id="vecGoalB">—</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="section-body">
+                <div class="body-header">Stan Zewnętrzny (Ciało/Laban)</div>
+                
+                <div class="laban-grid">
+                    <div class="factor">
+                        <span class="f-label">CZAS</span>
+                        <span class="f-val" id="qTimeB">—</span>
+                    </div>
+                    <div class="factor">
+                        <span class="f-label">WAGA</span>
+                        <span class="f-val" id="qWeightB">—</span>
+                    </div>
+                    <div class="factor">
+                        <span class="f-label">PRZESTRZEŃ</span>
+                        <span class="f-val" id="qSpaceB">—</span>
+                    </div>
+                </div>
+
+                <div class="laban-result">
+                    <div class="action-name" id="resLabanB">———</div>
+                    <div class="action-desc" id="subLabanB">Kliknij Generuj</div>
+                </div>
+            </div>
+            <div class="instruction" id="instrB">Czekam na instrukcje...</div>
+        </div>
+    </div>
+
+    <script>
+        // Model Koła Plutchika z Wektorami Emocjonalnymi
+        const emotions = [
+            { 
+                name: "Radość", 
+                class: "c-radosc",
+                vectors: {
+                    kierunek: "W GÓRĘ",
+                    impuls: "EKSPANSJA",
+                    cel: "POKAZAĆ SIĘ"
+                }
+            },
+            { 
+                name: "Zaufanie", 
+                class: "c-zaufanie",
+                vectors: {
+                    kierunek: "OTWARCIE",
+                    impuls: "MIĘKKOŚĆ",
+                    cel: "PRZYJĄĆ"
+                }
+            },
+            { 
+                name: "Strach", 
+                class: "c-strach",
+                vectors: {
+                    kierunek: "DO TYŁU",
+                    impuls: "NAPIĘCIE",
+                    cel: "UCIEC"
+                }
+            },
+            { 
+                name: "Zdziwienie", 
+                class: "c-zdziwienie",
+                vectors: {
+                    kierunek: "STOP",
+                    impuls: "SZOK",
+                    cel: "ZORIENTOWAĆ"
+                }
+            },
+            { 
+                name: "Smutek", 
+                class: "c-smutek",
+                vectors: {
+                    kierunek: "W DÓŁ",
+                    impuls: "CIĘŻAR",
+                    cel: "WYCOFAĆ SIĘ"
+                }
+            },
+            { 
+                name: "Wstręt", 
+                class: "c-wstret",
+                vectors: {
+                    kierunek: "ODRZUT",
+                    impuls: "SKURCZ",
+                    cel: "WYPLUĆ"
+                }
+            },
+            { 
+                name: "Gniew", 
+                class: "c-gniew",
+                vectors: {
+                    kierunek: "DO PRZODU",
+                    impuls: "GORĄCO",
+                    cel: "ZNISZCZYĆ"
+                }
+            },
+            { 
+                name: "Oczekiwanie", 
+                class: "c-oczekiwanie",
+                vectors: {
+                    kierunek: "SKANOWANIE",
+                    impuls: "CZUJNOŚĆ",
+                    cel: "BADAĆ"
+                }
+            }
+        ];
+
+        // 8 Akcji Rudolfa Labana (Effort Actions)
+        function getRandomLaban() {
+            const isSudden = Math.random() < 0.5;
+            const isStrong = Math.random() < 0.5;
+            const isDirect = Math.random() < 0.5;
+
+            // Ustalanie nazwy akcji na podstawie kombinacji
+            let action = "";
+            let desc = "";
+
+            if (isDirect && isStrong && isSudden) { 
+                action = "PUNCH"; 
+                desc = "Boksowanie / Pchnięcie"; 
+            } else if (isDirect && isStrong && !isSudden) { 
+                action = "PRESS"; 
+                desc = "Naciskanie / Miażdżenie"; 
+            } else if (isDirect && !isStrong && isSudden) { 
+                action = "DAB"; 
+                desc = "Punktowanie / Delikatny dotyk"; 
+            } else if (isDirect && !isStrong && !isSudden) { 
+                action = "GLIDE"; 
+                desc = "Ślizg / Gładzenie"; 
+            } else if (!isDirect && isStrong && isSudden) { 
+                action = "SLASH"; 
+                desc = "Cięcie / Smagnięcie"; 
+            } else if (!isDirect && isStrong && !isSudden) { 
+                action = "WRING"; 
+                desc = "Wyżymanie / Skręcanie"; 
+            } else if (!isDirect && !isStrong && isSudden) { 
+                action = "FLICK"; 
+                desc = "Pstryknięcie / Strząśnięcie"; 
+            } else if (!isDirect && !isStrong && !isSudden) { 
+                action = "FLOAT"; 
+                desc = "Unoszenie / Dryfowanie"; 
+            }
+
+            return {
+                time: isSudden ? "Nagły" : "Ciągły",
+                weight: isStrong ? "Ciężki" : "Lekki",
+                space: isDirect ? "Prosty" : "Okrężny",
+                name: action,
+                desc: desc
+            };
+        }
+
+        function updateCard(role, emoIdx, instructionText) {
+            const emo = emotions[emoIdx];
+            const laban = getRandomLaban();
+
+            // Ustawienia Emocji
+            const emoBox = document.getElementById(`boxEmo${role}`);
+            
+            // Reset klas i dodanie nowych
+            emoBox.className = 'section-emo';
+            emoBox.classList.add(emo.class);
+            
+            document.getElementById(`txtEmo${role}`).innerText = emo.name;
+
+            // Ustawienia Wektorów Emocjonalnych
+            document.getElementById(`vecDir${role}`).innerText = emo.vectors.kierunek;
+            document.getElementById(`vecImp${role}`).innerText = emo.vectors.impuls;
+            document.getElementById(`vecGoal${role}`).innerText = emo.vectors.cel;
+
+            // Ustawienia Labana
+            document.getElementById(`qTime${role}`).innerText = laban.time;
+            document.getElementById(`qWeight${role}`).innerText = laban.weight;
+            document.getElementById(`qSpace${role}`).innerText = laban.space;
+            
+            document.getElementById(`resLaban${role}`).innerText = laban.name;
+            document.getElementById(`subLaban${role}`).innerText = laban.desc;
+
+            // Instrukcja
+            document.getElementById(`instr${role}`).innerText = instructionText;
+        }
+
+        function generateScenario() {
+            const mode = document.getElementById("gameMode").value;
+            
+            const idxA = Math.floor(Math.random() * 8);
+            let idxB;
+            let instrA = "";
+            let instrB = "";
+
+            switch (mode) {
+                case "random":
+                    idxB = Math.floor(Math.random() * 8);
+                    instrA = "🎲 Nie wiesz, co czuje partner. Improwizuj!";
+                    instrB = "🎲 Nie wiesz, co czuje partner. Odkrywaj!";
+                    break;
+                case "contrast":
+                    // Przeciwieństwo na kole Plutchika (np. Radość <-> Smutek)
+                    idxB = (idxA + 4) % 8;
+                    instrA = "⚔️ Jesteś w emocjonalnym konflikcie z partnerem.";
+                    instrB = "⚔️ Twoja emocja jest odwrotnością partnera.";
+                    break;
+                case "clock":
+                    // Przesunięcie o 1 (np. Radość -> Zaufanie)
+                    idxB = (idxA + 1) % 8;
+                    instrA = "🔄 Zainicjuj temat. Prowadź scenę.";
+                    instrB = "🔄 Reaguj i próbuj zmienić kierunek.";
+                    break;
+                case "mirror":
+                    idxB = idxA;
+                    instrA = "🪞 Ta sama emocja, ale różne ciała...";
+                    instrB = "🪞 Czujesz to samo, wyrażasz inaczej.";
+                    break;
+            }
+
+            updateCard("A", idxA, instrA);
+            updateCard("B", idxB, instrB);
+        }
+
+        // Uruchom przy starcie
+        window.onload = generateScenario;
+
+    </script>
+</body>
+</html>
