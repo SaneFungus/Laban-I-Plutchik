@@ -29,6 +29,44 @@
             flex-direction: column;
             align-items: center;
             min-height: 100vh;
+            position: relative;
+        }
+
+        /* Language Switcher */
+        .lang-switch {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            z-index: 1000;
+        }
+
+        .lang-btn {
+            background: transparent;
+            border: 1px solid #444;
+            color: #888;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.2s;
+            width: auto;
+            box-shadow: none;
+        }
+
+        .lang-btn:hover {
+            border-color: #666;
+            color: #fff;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .lang-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            font-weight: bold;
         }
 
         h1 {
@@ -41,6 +79,8 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            text-align: center;
+            margin-top: 30px;
         }
 
         .subtitle {
@@ -82,7 +122,7 @@
             border-color: #555;
         }
 
-        button {
+        button.gen-btn {
             width: 100%;
             padding: 15px;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -98,12 +138,12 @@
             box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
         }
 
-        button:hover {
+        button.gen-btn:hover {
             transform: translateY(-2px);
             box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
         }
 
-        button:active {
+        button.gen-btn:active {
             transform: scale(0.97);
         }
 
@@ -397,52 +437,64 @@
                 grid-template-columns: 1fr;
                 gap: 6px;
             }
+
+            .lang-switch {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+            }
         }
 
     </style>
 </head>
 <body>
 
-    <h1>ImproLab: Kontrapunkt 2.0</h1>
-    <div class="subtitle">
+    <div class="lang-switch">
+        <button onclick="setLanguage('pl')" id="btn-pl" class="lang-btn active">PL</button>
+        <button onclick="setLanguage('en')" id="btn-en" class="lang-btn">EN</button>
+    </div>
+
+    <h1 data-i18n="title">ImproLab: Kontrapunkt 2.0</h1>
+    <div class="subtitle" data-i18n="subtitle">
         Generator dysonansu psychofizycznego.<br>
         <strong>Synteza emocji Plutchika z ruchami Labana.</strong><br>
         Zadanie wewnętrzne (emocja) vs Ekspresja zewnętrzna (ruch).
     </div>
 
     <div class="controls">
-        <label style="font-size: 0.8rem; color: #888; margin-bottom: 5px; display:block;">WYBIERZ DYNAMIKĘ RELACJI:</label>
+        <label style="font-size: 0.8rem; color: #888; margin-bottom: 5px; display:block;" data-i18n="label_dynamics">WYBIERZ DYNAMIKĘ RELACJI:</label>
         <select id="gameMode">
-            <option value="random">CHAOS (Całkowita losowość)</option>
-            <option value="contrast">KONTRAST (Emocje przeciwne)</option>
-            <option value="clock">ZEGAR (Przesunięcie o 1 stopień)</option>
-            <option value="mirror">LUSTRO (Ta sama emocja, inny ruch)</option>
+            <option value="random" data-i18n="mode_random">CHAOS (Całkowita losowość)</option>
+            <option value="contrast" data-i18n="mode_contrast">KONTRAST (Emocje przeciwne)</option>
+            <option value="clock" data-i18n="mode_clock">ZEGAR (Przesunięcie o 1 stopień)</option>
+            <option value="mirror" data-i18n="mode_mirror">LUSTRO (Ta sama emocja, inny ruch)</option>
         </select>
-        <button onclick="generateScenario()">🎭 Generuj Scenę</button>
+        <button onclick="generateScenario()" class="gen-btn" data-i18n="btn_generate">🎭 Generuj Scenę</button>
     </div>
 
     <div class="container">
+        <!-- Postać A -->
         <div class="card">
-            <div class="card-header">Postać A</div>
+            <div class="card-header" data-i18n="char_a">Postać A</div>
             
             <div id="boxEmoA" class="section-emo c-radosc">
-                <div class="emo-label">Stan Wewnętrzny (Emocja)</div>
+                <div class="emo-label" data-i18n="label_internal">Stan Wewnętrzny (Emocja)</div>
                 <div class="emo-value" id="txtEmoA">?</div>
             </div>
 
             <div class="emotion-vectors">
-                <div class="vectors-title">Wektory Emocjonalne (Zadania)</div>
+                <div class="vectors-title" data-i18n="label_vectors">Wektory Emocjonalne (Zadania)</div>
                 <div class="vector-grid">
                     <div class="vector-item">
-                        <span class="vector-label">Kierunek</span>
+                        <span class="vector-label" data-i18n="label_direction">Kierunek</span>
                         <span class="vector-value" id="vecDirA">—</span>
                     </div>
                     <div class="vector-item">
-                        <span class="vector-label">Impuls</span>
+                        <span class="vector-label" data-i18n="label_impulse">Impuls</span>
                         <span class="vector-value" id="vecImpA">—</span>
                     </div>
                     <div class="vector-item">
-                        <span class="vector-label">Cel</span>
+                        <span class="vector-label" data-i18n="label_goal">Cel</span>
                         <span class="vector-value" id="vecGoalA">—</span>
                     </div>
                 </div>
@@ -451,52 +503,53 @@
             <div class="divider"></div>
 
             <div class="section-body">
-                <div class="body-header">Stan Zewnętrzny (Ciało/Laban)</div>
+                <div class="body-header" data-i18n="label_external">Stan Zewnętrzny (Ciało/Laban)</div>
                 
                 <div class="laban-grid">
                     <div class="factor">
-                        <span class="f-label">CZAS</span>
+                        <span class="f-label" data-i18n="label_time">CZAS</span>
                         <span class="f-val" id="qTimeA">—</span>
                     </div>
                     <div class="factor">
-                        <span class="f-label">WAGA</span>
+                        <span class="f-label" data-i18n="label_weight">WAGA</span>
                         <span class="f-val" id="qWeightA">—</span>
                     </div>
                     <div class="factor">
-                        <span class="f-label">PRZESTRZEŃ</span>
+                        <span class="f-label" data-i18n="label_space">PRZESTRZEŃ</span>
                         <span class="f-val" id="qSpaceA">—</span>
                     </div>
                 </div>
 
                 <div class="laban-result">
                     <div class="action-name" id="resLabanA">———</div>
-                    <div class="action-desc" id="subLabanA">Kliknij Generuj</div>
+                    <div class="action-desc" id="subLabanA" data-i18n="placeholder_generate">Kliknij Generuj</div>
                 </div>
             </div>
-            <div class="instruction" id="instrA">Czekam na instrukcje...</div>
+            <div class="instruction" id="instrA" data-i18n="placeholder_waiting">Czekam na instrukcje...</div>
         </div>
 
+        <!-- Postać B -->
         <div class="card">
-            <div class="card-header">Postać B</div>
+            <div class="card-header" data-i18n="char_b">Postać B</div>
             
             <div id="boxEmoB" class="section-emo c-smutek">
-                <div class="emo-label">Stan Wewnętrzny (Emocja)</div>
+                <div class="emo-label" data-i18n="label_internal">Stan Wewnętrzny (Emocja)</div>
                 <div class="emo-value" id="txtEmoB">?</div>
             </div>
 
             <div class="emotion-vectors">
-                <div class="vectors-title">Wektory Emocjonalne (Zadania)</div>
+                <div class="vectors-title" data-i18n="label_vectors">Wektory Emocjonalne (Zadania)</div>
                 <div class="vector-grid">
                     <div class="vector-item">
-                        <span class="vector-label">Kierunek</span>
+                        <span class="vector-label" data-i18n="label_direction">Kierunek</span>
                         <span class="vector-value" id="vecDirB">—</span>
                     </div>
                     <div class="vector-item">
-                        <span class="vector-label">Impuls</span>
+                        <span class="vector-label" data-i18n="label_impulse">Impuls</span>
                         <span class="vector-value" id="vecImpB">—</span>
                     </div>
                     <div class="vector-item">
-                        <span class="vector-label">Cel</span>
+                        <span class="vector-label" data-i18n="label_goal">Cel</span>
                         <span class="vector-value" id="vecGoalB">—</span>
                     </div>
                 </div>
@@ -505,105 +558,189 @@
             <div class="divider"></div>
 
             <div class="section-body">
-                <div class="body-header">Stan Zewnętrzny (Ciało/Laban)</div>
+                <div class="body-header" data-i18n="label_external">Stan Zewnętrzny (Ciało/Laban)</div>
                 
                 <div class="laban-grid">
                     <div class="factor">
-                        <span class="f-label">CZAS</span>
+                        <span class="f-label" data-i18n="label_time">CZAS</span>
                         <span class="f-val" id="qTimeB">—</span>
                     </div>
                     <div class="factor">
-                        <span class="f-label">WAGA</span>
+                        <span class="f-label" data-i18n="label_weight">WAGA</span>
                         <span class="f-val" id="qWeightB">—</span>
                     </div>
                     <div class="factor">
-                        <span class="f-label">PRZESTRZEŃ</span>
+                        <span class="f-label" data-i18n="label_space">PRZESTRZEŃ</span>
                         <span class="f-val" id="qSpaceB">—</span>
                     </div>
                 </div>
 
                 <div class="laban-result">
                     <div class="action-name" id="resLabanB">———</div>
-                    <div class="action-desc" id="subLabanB">Kliknij Generuj</div>
+                    <div class="action-desc" id="subLabanB" data-i18n="placeholder_generate">Kliknij Generuj</div>
                 </div>
             </div>
-            <div class="instruction" id="instrB">Czekam na instrukcje...</div>
+            <div class="instruction" id="instrB" data-i18n="placeholder_waiting">Czekam na instrukcje...</div>
         </div>
     </div>
 
     <script>
+        // Słownik tłumaczeń
+        const translations = {
+            pl: {
+                title: "ImproLab: Kontrapunkt 2.0",
+                subtitle: "Generator dysonansu psychofizycznego.<br><strong>Synteza emocji Plutchika z ruchami Labana.</strong><br>Zadanie wewnętrzne (emocja) vs Ekspresja zewnętrzna (ruch).",
+                label_dynamics: "WYBIERZ DYNAMIKĘ RELACJI:",
+                mode_random: "CHAOS (Całkowita losowość)",
+                mode_contrast: "KONTRAST (Emocje przeciwne)",
+                mode_clock: "ZEGAR (Przesunięcie o 1 stopień)",
+                mode_mirror: "LUSTRO (Ta sama emocja, inny ruch)",
+                btn_generate: "🎭 Generuj Scenę",
+                char_a: "Postać A",
+                char_b: "Postać B",
+                label_internal: "Stan Wewnętrzny (Emocja)",
+                label_vectors: "Wektory Emocjonalne (Zadania)",
+                label_direction: "Kierunek",
+                label_impulse: "Impuls",
+                label_goal: "Cel",
+                label_external: "Stan Zewnętrzny (Ciało/Laban)",
+                label_time: "CZAS",
+                label_weight: "WAGA",
+                label_space: "PRZESTRZEŃ",
+                placeholder_generate: "Kliknij Generuj",
+                placeholder_waiting: "Czekam na instrukcje...",
+                // Instructions
+                instr_random: "🎲 Nie wiesz, co czuje partner. Improwizuj!",
+                instr_discover: "🎲 Nie wiesz, co czuje partner. Odkrywaj!",
+                instr_conflict: "⚔️ Jesteś w emocjonalnym konflikcie z partnerem.",
+                instr_opposite: "⚔️ Twoja emocja jest odwrotnością partnera.",
+                instr_initiate: "🔄 Zainicjuj temat. Prowadź scenę.",
+                instr_react: "🔄 Reaguj i próbuj zmienić kierunek.",
+                instr_same_emo: "🪞 Ta sama emocja, ale różne ciała...",
+                instr_same_feel: "🪞 Czujesz to samo, wyrażasz inaczej.",
+                // Laban Qualities
+                sudden: "Nagły",
+                sustained: "Ciągły",
+                strong: "Ciężki",
+                light: "Lekki",
+                direct: "Prosty",
+                indirect: "Okrężny"
+            },
+            en: {
+                title: "ImproLab: Counterpoint 2.0",
+                subtitle: "Psychophysical Dissonance Generator.<br><strong>Synthesis of Plutchik's emotions and Laban's movements.</strong><br>Internal task (emotion) vs External expression (movement).",
+                label_dynamics: "CHOOSE RELATIONSHIP DYNAMICS:",
+                mode_random: "CHAOS (Total randomness)",
+                mode_contrast: "CONTRAST (Opposite emotions)",
+                mode_clock: "CLOCK (Shift by 1 step)",
+                mode_mirror: "MIRROR (Same emotion, different movement)",
+                btn_generate: "🎭 Generate Scene",
+                char_a: "Character A",
+                char_b: "Character B",
+                label_internal: "Internal State (Emotion)",
+                label_vectors: "Emotional Vectors (Tasks)",
+                label_direction: "Direction",
+                label_impulse: "Impulse",
+                label_goal: "Goal",
+                label_external: "External State (Body/Laban)",
+                label_time: "TIME",
+                label_weight: "WEIGHT",
+                label_space: "SPACE",
+                placeholder_generate: "Click Generate",
+                placeholder_waiting: "Waiting for instructions...",
+                // Instructions
+                instr_random: "🎲 You don't know what your partner feels. Improvise!",
+                instr_discover: "🎲 You don't know what your partner feels. Discover!",
+                instr_conflict: "⚔️ You are in emotional conflict with your partner.",
+                instr_opposite: "⚔️ Your emotion is the opposite of your partner's.",
+                instr_initiate: "🔄 Initiate the topic. Lead the scene.",
+                instr_react: "🔄 React and try to change direction.",
+                instr_same_emo: "🪞 Same emotion, but different bodies...",
+                instr_same_feel: "🪞 You feel the same, but express it differently.",
+                // Laban Qualities
+                sudden: "Sudden",
+                sustained: "Sustained",
+                strong: "Strong",
+                light: "Light",
+                direct: "Direct",
+                indirect: "Indirect"
+            }
+        };
+
+        let currentLang = 'pl';
+
         // Model Koła Plutchika z Wektorami Emocjonalnymi
         const emotions = [
             { 
-                name: "Radość", 
+                name: { pl: "Radość", en: "Joy" },
                 class: "c-radosc",
                 vectors: {
-                    kierunek: "W GÓRĘ",
-                    impuls: "EKSPANSJA",
-                    cel: "POKAZAĆ SIĘ"
+                    kierunek: { pl: "W GÓRĘ", en: "UP" },
+                    impuls: { pl: "EKSPANSJA", en: "EXPANSION" },
+                    cel: { pl: "POKAZAĆ SIĘ", en: "SHOW OFF" }
                 }
             },
             { 
-                name: "Zaufanie", 
+                name: { pl: "Zaufanie", en: "Trust" },
                 class: "c-zaufanie",
                 vectors: {
-                    kierunek: "OTWARCIE",
-                    impuls: "MIĘKKOŚĆ",
-                    cel: "PRZYJĄĆ"
+                    kierunek: { pl: "OTWARCIE", en: "OPENING" },
+                    impuls: { pl: "MIĘKKOŚĆ", en: "SOFTNESS" },
+                    cel: { pl: "PRZYJĄĆ", en: "ACCEPT" }
                 }
             },
             { 
-                name: "Strach", 
+                name: { pl: "Strach", en: "Fear" },
                 class: "c-strach",
                 vectors: {
-                    kierunek: "DO TYŁU",
-                    impuls: "NAPIĘCIE",
-                    cel: "UCIEC"
+                    kierunek: { pl: "DO TYŁU", en: "BACKWARDS" },
+                    impuls: { pl: "NAPIĘCIE", en: "TENSION" },
+                    cel: { pl: "UCIEC", en: "ESCAPE" }
                 }
             },
             { 
-                name: "Zdziwienie", 
+                name: { pl: "Zdziwienie", en: "Surprise" },
                 class: "c-zdziwienie",
                 vectors: {
-                    kierunek: "STOP",
-                    impuls: "SZOK",
-                    cel: "ZORIENTOWAĆ"
+                    kierunek: { pl: "STOP", en: "STOP" },
+                    impuls: { pl: "SZOK", en: "SHOCK" },
+                    cel: { pl: "ZORIENTOWAĆ", en: "ORIENT" }
                 }
             },
             { 
-                name: "Smutek", 
+                name: { pl: "Smutek", en: "Sadness" },
                 class: "c-smutek",
                 vectors: {
-                    kierunek: "W DÓŁ",
-                    impuls: "CIĘŻAR",
-                    cel: "WYCOFAĆ SIĘ"
+                    kierunek: { pl: "W DÓŁ", en: "DOWN" },
+                    impuls: { pl: "CIĘŻAR", en: "WEIGHT" },
+                    cel: { pl: "WYCOFAĆ SIĘ", en: "WITHDRAW" }
                 }
             },
             { 
-                name: "Wstręt", 
+                name: { pl: "Wstręt", en: "Disgust" },
                 class: "c-wstret",
                 vectors: {
-                    kierunek: "ODRZUT",
-                    impuls: "SKURCZ",
-                    cel: "WYPLUĆ"
+                    kierunek: { pl: "ODRZUT", en: "RECOIL" },
+                    impuls: { pl: "SKURCZ", en: "CONTRACTION" },
+                    cel: { pl: "WYPLUĆ", en: "SPIT OUT" }
                 }
             },
             { 
-                name: "Gniew", 
+                name: { pl: "Gniew", en: "Anger" },
                 class: "c-gniew",
                 vectors: {
-                    kierunek: "DO PRZODU",
-                    impuls: "GORĄCO",
-                    cel: "ZNISZCZYĆ"
+                    kierunek: { pl: "DO PRZODU", en: "FORWARD" },
+                    impuls: { pl: "GORĄCO", en: "HEAT" },
+                    cel: { pl: "ZNISZCZYĆ", en: "DESTROY" }
                 }
             },
             { 
-                name: "Oczekiwanie", 
+                name: { pl: "Oczekiwanie", en: "Anticipation" },
                 class: "c-oczekiwanie",
                 vectors: {
-                    kierunek: "SKANOWANIE",
-                    impuls: "CZUJNOŚĆ",
-                    cel: "BADAĆ"
+                    kierunek: { pl: "SKANOWANIE", en: "SCANNING" },
+                    impuls: { pl: "CZUJNOŚĆ", en: "VIGILANCE" },
+                    cel: { pl: "BADAĆ", en: "INVESTIGATE" }
                 }
             }
         ];
@@ -616,71 +753,107 @@
 
             // Ustalanie nazwy akcji na podstawie kombinacji
             let action = "";
-            let desc = "";
+            let desc = { pl: "", en: "" };
 
             if (isDirect && isStrong && isSudden) { 
                 action = "PUNCH"; 
-                desc = "Boksowanie / Pchnięcie"; 
+                desc = { pl: "Boksowanie / Pchnięcie", en: "Boxing / Thrust" };
             } else if (isDirect && isStrong && !isSudden) { 
                 action = "PRESS"; 
-                desc = "Naciskanie / Miażdżenie"; 
+                desc = { pl: "Naciskanie / Miażdżenie", en: "Pressing / Crushing" };
             } else if (isDirect && !isStrong && isSudden) { 
                 action = "DAB"; 
-                desc = "Punktowanie / Delikatny dotyk"; 
+                desc = { pl: "Punktowanie / Delikatny dotyk", en: "Dabbing / Light touch" };
             } else if (isDirect && !isStrong && !isSudden) { 
                 action = "GLIDE"; 
-                desc = "Ślizg / Gładzenie"; 
+                desc = { pl: "Ślizg / Gładzenie", en: "Gliding / Smoothing" };
             } else if (!isDirect && isStrong && isSudden) { 
                 action = "SLASH"; 
-                desc = "Cięcie / Smagnięcie"; 
+                desc = { pl: "Cięcie / Smagnięcie", en: "Slashing / Whipping" };
             } else if (!isDirect && isStrong && !isSudden) { 
                 action = "WRING"; 
-                desc = "Wyżymanie / Skręcanie"; 
+                desc = { pl: "Wyżymanie / Skręcanie", en: "Wringing / Twisting" };
             } else if (!isDirect && !isStrong && isSudden) { 
                 action = "FLICK"; 
-                desc = "Pstryknięcie / Strząśnięcie"; 
+                desc = { pl: "Pstryknięcie / Strząśnięcie", en: "Flicking / Shaking off" };
             } else if (!isDirect && !isStrong && !isSudden) { 
                 action = "FLOAT"; 
-                desc = "Unoszenie / Dryfowanie"; 
+                desc = { pl: "Unoszenie / Dryfowanie", en: "Floating / Drifting" };
             }
 
             return {
-                time: isSudden ? "Nagły" : "Ciągły",
-                weight: isStrong ? "Ciężki" : "Lekki",
-                space: isDirect ? "Prosty" : "Okrężny",
+                time: isSudden ? "sudden" : "sustained",
+                weight: isStrong ? "strong" : "light",
+                space: isDirect ? "direct" : "indirect",
                 name: action,
                 desc: desc
             };
         }
 
-        function updateCard(role, emoIdx, instructionText) {
-            const emo = emotions[emoIdx];
-            const laban = getRandomLaban();
+        let lastScenarioData = null;
 
-            // Ustawienia Emocji
+        function updateCard(role, emoIdx, instructionKey) {
+            const emo = emotions[emoIdx];
+            // If called from generateScenario, we generate new Laban.
+            // If called from setLanguage, we should ideally keep the same Laban and Emotion but translate them.
+            // However, simpliest way is to store the indices and seeds or just regenerate.
+            // To be user friendly, when switching language, we shouldn't regenerate the scenario.
+            // So we need to separate data generation from rendering.
+        }
+
+        // Separate State
+        let state = {
+            charA: { emoIdx: 0, laban: null, instrKey: "" },
+            charB: { emoIdx: 0, laban: null, instrKey: "" }
+        };
+
+        function render() {
+            const t = translations[currentLang];
+
+            // Static text
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                if (t[key]) {
+                    el.innerHTML = t[key];
+                }
+            });
+
+            // Update Cards if state is initialized
+            if (state.charA.laban && state.charB.laban) {
+                renderCard('A', state.charA);
+                renderCard('B', state.charB);
+            }
+        }
+
+        function renderCard(role, charState) {
+            const t = translations[currentLang];
+            const emo = emotions[charState.emoIdx];
+            const laban = charState.laban;
+
+             // Ustawienia Emocji
             const emoBox = document.getElementById(`boxEmo${role}`);
             
             // Reset klas i dodanie nowych
             emoBox.className = 'section-emo';
             emoBox.classList.add(emo.class);
             
-            document.getElementById(`txtEmo${role}`).innerText = emo.name;
+            document.getElementById(`txtEmo${role}`).innerText = emo.name[currentLang];
 
             // Ustawienia Wektorów Emocjonalnych
-            document.getElementById(`vecDir${role}`).innerText = emo.vectors.kierunek;
-            document.getElementById(`vecImp${role}`).innerText = emo.vectors.impuls;
-            document.getElementById(`vecGoal${role}`).innerText = emo.vectors.cel;
+            document.getElementById(`vecDir${role}`).innerText = emo.vectors.kierunek[currentLang];
+            document.getElementById(`vecImp${role}`).innerText = emo.vectors.impuls[currentLang];
+            document.getElementById(`vecGoal${role}`).innerText = emo.vectors.cel[currentLang];
 
             // Ustawienia Labana
-            document.getElementById(`qTime${role}`).innerText = laban.time;
-            document.getElementById(`qWeight${role}`).innerText = laban.weight;
-            document.getElementById(`qSpace${role}`).innerText = laban.space;
+            document.getElementById(`qTime${role}`).innerText = t[laban.time];
+            document.getElementById(`qWeight${role}`).innerText = t[laban.weight];
+            document.getElementById(`qSpace${role}`).innerText = t[laban.space];
             
             document.getElementById(`resLaban${role}`).innerText = laban.name;
-            document.getElementById(`subLaban${role}`).innerText = laban.desc;
+            document.getElementById(`subLaban${role}`).innerText = laban.desc[currentLang];
 
             // Instrukcja
-            document.getElementById(`instr${role}`).innerText = instructionText;
+            document.getElementById(`instr${role}`).innerText = t[charState.instrKey];
         }
 
         function generateScenario() {
@@ -688,40 +861,62 @@
             
             const idxA = Math.floor(Math.random() * 8);
             let idxB;
-            let instrA = "";
-            let instrB = "";
+            let instrKeyA = "";
+            let instrKeyB = "";
 
             switch (mode) {
                 case "random":
                     idxB = Math.floor(Math.random() * 8);
-                    instrA = "🎲 Nie wiesz, co czuje partner. Improwizuj!";
-                    instrB = "🎲 Nie wiesz, co czuje partner. Odkrywaj!";
+                    instrKeyA = "instr_random";
+                    instrKeyB = "instr_discover";
                     break;
                 case "contrast":
-                    // Przeciwieństwo na kole Plutchika (np. Radość <-> Smutek)
                     idxB = (idxA + 4) % 8;
-                    instrA = "⚔️ Jesteś w emocjonalnym konflikcie z partnerem.";
-                    instrB = "⚔️ Twoja emocja jest odwrotnością partnera.";
+                    instrKeyA = "instr_conflict";
+                    instrKeyB = "instr_opposite";
                     break;
                 case "clock":
-                    // Przesunięcie o 1 (np. Radość -> Zaufanie)
                     idxB = (idxA + 1) % 8;
-                    instrA = "🔄 Zainicjuj temat. Prowadź scenę.";
-                    instrB = "🔄 Reaguj i próbuj zmienić kierunek.";
+                    instrKeyA = "instr_initiate";
+                    instrKeyB = "instr_react";
                     break;
                 case "mirror":
                     idxB = idxA;
-                    instrA = "🪞 Ta sama emocja, ale różne ciała...";
-                    instrB = "🪞 Czujesz to samo, wyrażasz inaczej.";
+                    instrKeyA = "instr_same_emo";
+                    instrKeyB = "instr_same_feel";
                     break;
             }
 
-            updateCard("A", idxA, instrA);
-            updateCard("B", idxB, instrB);
+            state.charA = {
+                emoIdx: idxA,
+                laban: getRandomLaban(),
+                instrKey: instrKeyA
+            };
+
+            state.charB = {
+                emoIdx: idxB,
+                laban: getRandomLaban(),
+                instrKey: instrKeyB
+            };
+
+            render();
+        }
+
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.documentElement.lang = lang;
+
+            // Update buttons
+            document.getElementById('btn-pl').classList.toggle('active', lang === 'pl');
+            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+
+            render();
         }
 
         // Uruchom przy starcie
-        window.onload = generateScenario;
+        window.onload = function() {
+            generateScenario();
+        };
 
     </script>
 </body>
