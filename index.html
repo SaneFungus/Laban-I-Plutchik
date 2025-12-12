@@ -445,13 +445,27 @@
             }
         }
 
+        /* Accessibility Utilities */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
     </style>
 </head>
 <body>
 
+    <div id="a11y-announcer" class="visually-hidden" aria-live="polite"></div>
+
     <div class="lang-switch">
-        <button onclick="setLanguage('pl')" id="btn-pl" class="lang-btn active">PL</button>
-        <button onclick="setLanguage('en')" id="btn-en" class="lang-btn">EN</button>
+        <button onclick="setLanguage('pl')" id="btn-pl" class="lang-btn active" aria-pressed="true">PL</button>
+        <button onclick="setLanguage('en')" id="btn-en" class="lang-btn" aria-pressed="false">EN</button>
     </div>
 
     <h1 data-i18n="title">ImproLab: Kontrapunkt 2.0</h1>
@@ -624,7 +638,8 @@
                 strong: "Ciężki",
                 light: "Lekki",
                 direct: "Prosty",
-                indirect: "Okrężny"
+                indirect: "Okrężny",
+                a11y_scenario_generated: "Nowy scenariusz wygenerowany: Postać A czuje {0}, Postać B czuje {1}."
             },
             en: {
                 title: "ImproLab: Counterpoint 2.0",
@@ -663,7 +678,8 @@
                 strong: "Strong",
                 light: "Light",
                 direct: "Direct",
-                indirect: "Indirect"
+                indirect: "Indirect",
+                a11y_scenario_generated: "New scenario generated: Character A feels {0}, Character B feels {1}."
             }
         };
 
@@ -900,6 +916,13 @@
             };
 
             render();
+
+            // Announce to screen reader
+            const t = translations[currentLang];
+            const emoAName = emotions[idxA].name[currentLang];
+            const emoBName = emotions[idxB].name[currentLang];
+            const announcement = t.a11y_scenario_generated.replace('{0}', emoAName).replace('{1}', emoBName);
+            document.getElementById('a11y-announcer').innerText = announcement;
         }
 
         function setLanguage(lang) {
@@ -907,8 +930,14 @@
             document.documentElement.lang = lang;
 
             // Update buttons
-            document.getElementById('btn-pl').classList.toggle('active', lang === 'pl');
-            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            const btnPl = document.getElementById('btn-pl');
+            const btnEn = document.getElementById('btn-en');
+
+            btnPl.classList.toggle('active', lang === 'pl');
+            btnEn.classList.toggle('active', lang === 'en');
+
+            btnPl.setAttribute('aria-pressed', lang === 'pl');
+            btnEn.setAttribute('aria-pressed', lang === 'en');
 
             render();
         }
