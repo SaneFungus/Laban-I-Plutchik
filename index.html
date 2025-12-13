@@ -69,6 +69,17 @@
             font-weight: bold;
         }
 
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            margin: -1px;
+            padding: 0;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            border: 0;
+        }
+
         h1 {
             font-weight: 300;
             letter-spacing: 2px;
@@ -450,9 +461,11 @@
 <body>
 
     <div class="lang-switch">
-        <button onclick="setLanguage('pl')" id="btn-pl" class="lang-btn active">PL</button>
-        <button onclick="setLanguage('en')" id="btn-en" class="lang-btn">EN</button>
+        <button onclick="setLanguage('pl')" id="btn-pl" class="lang-btn active" aria-pressed="true">PL</button>
+        <button onclick="setLanguage('en')" id="btn-en" class="lang-btn" aria-pressed="false">EN</button>
     </div>
+
+    <div id="a11y-announcer" class="visually-hidden" aria-live="polite"></div>
 
     <h1 data-i18n="title">ImproLab: Kontrapunkt 2.0</h1>
     <div class="subtitle" data-i18n="subtitle">
@@ -609,6 +622,7 @@
                 label_space: "PRZESTRZEŃ",
                 placeholder_generate: "Kliknij Generuj",
                 placeholder_waiting: "Czekam na instrukcje...",
+                msg_generated: "Scenariusz wygenerowany",
                 // Instructions
                 instr_random: "🎲 Nie wiesz, co czuje partner. Improwizuj!",
                 instr_discover: "🎲 Nie wiesz, co czuje partner. Odkrywaj!",
@@ -648,6 +662,7 @@
                 label_space: "SPACE",
                 placeholder_generate: "Click Generate",
                 placeholder_waiting: "Waiting for instructions...",
+                msg_generated: "Scenario generated",
                 // Instructions
                 instr_random: "🎲 You don't know what your partner feels. Improvise!",
                 instr_discover: "🎲 You don't know what your partner feels. Discover!",
@@ -900,6 +915,14 @@
             };
 
             render();
+
+            // Announce to screen readers
+            const announcer = document.getElementById('a11y-announcer');
+            if (announcer) {
+                announcer.textContent = translations[currentLang].msg_generated;
+                // Clear text after announcement to ensure next same message is announced
+                setTimeout(() => { announcer.textContent = ''; }, 1000);
+            }
         }
 
         function setLanguage(lang) {
@@ -907,8 +930,16 @@
             document.documentElement.lang = lang;
 
             // Update buttons
-            document.getElementById('btn-pl').classList.toggle('active', lang === 'pl');
-            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            const btnPl = document.getElementById('btn-pl');
+            const btnEn = document.getElementById('btn-en');
+
+            const isPl = lang === 'pl';
+
+            btnPl.classList.toggle('active', isPl);
+            btnPl.setAttribute('aria-pressed', isPl);
+
+            btnEn.classList.toggle('active', !isPl);
+            btnEn.setAttribute('aria-pressed', !isPl);
 
             render();
         }
