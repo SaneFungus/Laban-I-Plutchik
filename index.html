@@ -69,6 +69,18 @@
             font-weight: bold;
         }
 
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
         h1 {
             font-weight: 300;
             letter-spacing: 2px;
@@ -450,9 +462,11 @@
 <body>
 
     <div class="lang-switch">
-        <button onclick="setLanguage('pl')" id="btn-pl" class="lang-btn active">PL</button>
-        <button onclick="setLanguage('en')" id="btn-en" class="lang-btn">EN</button>
+        <button onclick="setLanguage('pl')" id="btn-pl" class="lang-btn active" aria-pressed="true" aria-label="Język polski">PL</button>
+        <button onclick="setLanguage('en')" id="btn-en" class="lang-btn" aria-pressed="false" aria-label="English language">EN</button>
     </div>
+
+    <div id="a11y-announcer" class="visually-hidden" aria-live="polite"></div>
 
     <h1 data-i18n="title">ImproLab: Kontrapunkt 2.0</h1>
     <div class="subtitle" data-i18n="subtitle">
@@ -624,7 +638,8 @@
                 strong: "Ciężki",
                 light: "Lekki",
                 direct: "Prosty",
-                indirect: "Okrężny"
+                indirect: "Okrężny",
+                msg_generated: "Scena wygenerowana."
             },
             en: {
                 title: "ImproLab: Counterpoint 2.0",
@@ -663,7 +678,8 @@
                 strong: "Strong",
                 light: "Light",
                 direct: "Direct",
-                indirect: "Indirect"
+                indirect: "Indirect",
+                msg_generated: "Scene generated."
             }
         };
 
@@ -825,6 +841,17 @@
             }
         }
 
+        function announceScenario() {
+            const t = translations[currentLang];
+            const announcer = document.getElementById('a11y-announcer');
+            if (announcer) {
+                announcer.innerText = t.msg_generated;
+                // Clear after a moment to allow re-announcement of same text if needed (though aria-live handles duplicates sometimes poorly depending on browser)
+                // Actually, simplest is enough.
+                setTimeout(() => { announcer.innerText = ''; }, 3000);
+            }
+        }
+
         function renderCard(role, charState) {
             const t = translations[currentLang];
             const emo = emotions[charState.emoIdx];
@@ -900,6 +927,7 @@
             };
 
             render();
+            announceScenario();
         }
 
         function setLanguage(lang) {
@@ -907,8 +935,14 @@
             document.documentElement.lang = lang;
 
             // Update buttons
-            document.getElementById('btn-pl').classList.toggle('active', lang === 'pl');
-            document.getElementById('btn-en').classList.toggle('active', lang === 'en');
+            const btnPl = document.getElementById('btn-pl');
+            const btnEn = document.getElementById('btn-en');
+
+            btnPl.classList.toggle('active', lang === 'pl');
+            btnEn.classList.toggle('active', lang === 'en');
+
+            btnPl.setAttribute('aria-pressed', lang === 'pl');
+            btnEn.setAttribute('aria-pressed', lang === 'en');
 
             render();
         }
