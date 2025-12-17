@@ -104,6 +104,33 @@
             line-height: 1.5;
         }
 
+        /* Accessibility & UX Enhancements */
+        .kbd-hint {
+            display: inline-block;
+            background: rgba(255,255,255,0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.75em;
+            margin-left: 8px;
+            vertical-align: middle;
+            font-weight: normal;
+        }
+
+        /* Improved Focus Indicators */
+        :focus-visible {
+            outline: 2px solid white;
+            outline-offset: 2px;
+        }
+
+        select:focus-visible {
+            outline: 2px solid #667eea;
+        }
+
+        button.gen-btn:focus-visible {
+            outline: 2px solid white;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.6);
+        }
+
         /* --- Panel Sterowania --- */
         .controls {
             background: #252525;
@@ -476,7 +503,7 @@
     </div>
 
     <div class="controls">
-        <label style="font-size: 0.8rem; color: #888; margin-bottom: 5px; display:block;" data-i18n="label_dynamics">WYBIERZ DYNAMIKĘ RELACJI:</label>
+        <label for="gameMode" style="font-size: 0.8rem; color: #888; margin-bottom: 5px; display:block;" data-i18n="label_dynamics">WYBIERZ DYNAMIKĘ RELACJI:</label>
         <select id="gameMode">
             <option value="random" data-i18n="mode_random">CHAOS (Całkowita losowość)</option>
             <option value="contrast" data-i18n="mode_contrast">KONTRAST (Emocje przeciwne)</option>
@@ -609,7 +636,7 @@
                 mode_contrast: "KONTRAST (Emocje przeciwne)",
                 mode_clock: "ZEGAR (Przesunięcie o 1 stopień)",
                 mode_mirror: "LUSTRO (Ta sama emocja, inny ruch)",
-                btn_generate: "🎭 Generuj Scenę",
+                btn_generate: "🎭 Generuj Scenę <span class='kbd-hint'>[Spacja]</span>",
                 char_a: "Postać A",
                 char_b: "Postać B",
                 label_internal: "Stan Wewnętrzny (Emocja)",
@@ -649,7 +676,7 @@
                 mode_contrast: "CONTRAST (Opposite emotions)",
                 mode_clock: "CLOCK (Shift by 1 step)",
                 mode_mirror: "MIRROR (Same emotion, different movement)",
-                btn_generate: "🎭 Generate Scene",
+                btn_generate: "🎭 Generate Scene <span class='kbd-hint'>[Space]</span>",
                 char_a: "Character A",
                 char_b: "Character B",
                 label_internal: "Internal State (Emotion)",
