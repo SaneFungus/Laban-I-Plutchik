@@ -159,6 +159,27 @@
             transform: scale(0.97);
         }
 
+        /* Focus visible improvements */
+        button:focus-visible, select:focus-visible {
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.5);
+        }
+
+        /* Keyboard hint style */
+        .kbd-hint {
+            font-size: 0.7em;
+            opacity: 0.8;
+            margin-left: 10px;
+            font-weight: normal;
+            border: 1px solid rgba(255,255,255,0.3);
+            border-radius: 4px;
+            padding: 2px 6px;
+            vertical-align: middle;
+            background: rgba(0,0,0,0.1);
+            letter-spacing: 0.5px;
+        }
+
         /* --- Karty Postaci --- */
         .container {
             display: flex;
@@ -609,7 +630,7 @@
                 mode_contrast: "KONTRAST (Emocje przeciwne)",
                 mode_clock: "ZEGAR (Przesunięcie o 1 stopień)",
                 mode_mirror: "LUSTRO (Ta sama emocja, inny ruch)",
-                btn_generate: "🎭 Generuj Scenę",
+                btn_generate: "🎭 Generuj Scenę <span class='kbd-hint'>Spacja</span>",
                 char_a: "Postać A",
                 char_b: "Postać B",
                 label_internal: "Stan Wewnętrzny (Emocja)",
@@ -649,7 +670,7 @@
                 mode_contrast: "CONTRAST (Opposite emotions)",
                 mode_clock: "CLOCK (Shift by 1 step)",
                 mode_mirror: "MIRROR (Same emotion, different movement)",
-                btn_generate: "🎭 Generate Scene",
+                btn_generate: "🎭 Generate Scene <span class='kbd-hint'>Space</span>",
                 char_a: "Character A",
                 char_b: "Character B",
                 label_internal: "Internal State (Emotion)",
