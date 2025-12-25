@@ -45,7 +45,7 @@
         .lang-btn {
             background: transparent;
             border: 1px solid #444;
-            color: #888;
+            color: var(--text-sub);
             padding: 5px 10px;
             border-radius: 4px;
             cursor: pointer;
@@ -120,6 +120,24 @@
             margin-bottom: 25px;
             box-sizing: border-box;
             border: 1px solid #333;
+        }
+
+        .control-label {
+            font-size: 0.8rem;
+            color: var(--text-sub);
+            margin-bottom: 5px;
+            display: block;
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        .control-label:hover {
+            color: #ccc;
+        }
+
+        /* Delight: Highlight select when label is hovered */
+        .control-label:hover + select {
+            border-color: #666;
         }
 
         select {
@@ -226,7 +244,7 @@
             text-align: center;
             font-size: 1rem;
             font-weight: bold;
-            color: #888;
+            color: var(--text-sub);
             text-transform: uppercase;
             letter-spacing: 2px;
             border-bottom: 1px solid #333;
@@ -373,7 +391,7 @@
 
         .f-label { 
             font-size: 0.65rem; 
-            color: #888; 
+            color: var(--text-sub);
             display: block; 
             margin-bottom: 4px;
             text-transform: uppercase;
@@ -415,7 +433,7 @@
             padding: 12px;
             text-align: center;
             font-size: 0.85rem;
-            color: #888;
+            color: var(--text-sub);
             background: linear-gradient(135deg, #1a1a1a, #181818);
             border-top: 1px solid #2a2a2a;
             font-style: italic;
@@ -507,7 +525,7 @@
     </div>
 
     <div class="controls">
-        <label style="font-size: 0.8rem; color: #888; margin-bottom: 5px; display:block;" data-i18n="label_dynamics">WYBIERZ DYNAMIKĘ RELACJI:</label>
+        <label class="control-label" for="gameMode" data-i18n="label_dynamics">WYBIERZ DYNAMIKĘ RELACJI:</label>
         <select id="gameMode">
             <option value="random" data-i18n="mode_random">CHAOS (Całkowita losowość)</option>
             <option value="contrast" data-i18n="mode_contrast">KONTRAST (Emocje przeciwne)</option>
