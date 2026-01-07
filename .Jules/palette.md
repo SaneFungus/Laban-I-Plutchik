@@ -1,3 +1,5 @@
-## 2024-05-23 - Accessibility Patterns for Static Apps
-**Learning:** For single-page static apps that update content dynamically without page reloads, screen reader users miss context updates. Adding a simple `aria-live` region ("announcer") provides immediate feedback for actions like "Generate Scene".
-**Action:** In future static generators, always include a hidden `aria-live="polite"` element and update its text content whenever the main view changes.
+# Palette's Journal
+
+## 2024-05-21 - Visual Styling vs Semantic Structure
+**Learning:** This project uses specific classes (e.g., `.card-header`) for styling but applies them to generic `div` tags, missing the opportunity for semantic structure (`h2`, `h3`).
+**Action:** When styling headers, always use the appropriate heading tag (`h1`-`h6`) and reset browser defaults in CSS if necessary, rather than styling `div`s.
