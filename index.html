@@ -258,6 +258,20 @@
             50% { transform: scale(1.1); opacity: 0.8; }
         }
 
+        /* Animation for text updates */
+        @keyframes popIn {
+            0% { opacity: 0; transform: translateY(5px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .animate-pop { animation: none; }
+        }
+
         .emo-label {
             font-size: 0.7rem;
             text-transform: uppercase;
@@ -906,6 +920,19 @@
 
             // Instrukcja
             document.getElementById(`instr${role}`).innerText = t[charState.instrKey];
+
+            // Trigger animation
+            const animElements = [
+                document.getElementById(`txtEmo${role}`),
+                document.getElementById(`resLaban${role}`),
+                document.getElementById(`subLaban${role}`)
+            ];
+
+            animElements.forEach(el => {
+                el.classList.remove('animate-pop');
+                void el.offsetWidth; // Force reflow
+                el.classList.add('animate-pop');
+            });
         }
 
         function generateScenario() {
