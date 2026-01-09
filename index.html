@@ -86,6 +86,16 @@
             border: 0;
         }
 
+        /* Animation for dynamic content updates */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
         h1 {
             font-weight: 300;
             letter-spacing: 2px;
@@ -844,6 +854,12 @@
 
         let lastScenarioData = null;
 
+        function triggerAnimation(el) {
+            el.classList.remove('animate-pop');
+            void el.offsetWidth; // force reflow
+            el.classList.add('animate-pop');
+        }
+
         function updateCard(role, emoIdx, instructionKey) {
             const emo = emotions[emoIdx];
             // If called from generateScenario, we generate new Laban.
@@ -889,7 +905,9 @@
             emoBox.className = 'section-emo';
             emoBox.classList.add(emo.class);
             
-            document.getElementById(`txtEmo${role}`).innerText = emo.name[currentLang];
+            const txtEmo = document.getElementById(`txtEmo${role}`);
+            txtEmo.innerText = emo.name[currentLang];
+            triggerAnimation(txtEmo);
 
             // Ustawienia Wektorów Emocjonalnych
             document.getElementById(`vecDir${role}`).innerText = emo.vectors.kierunek[currentLang];
@@ -901,7 +919,10 @@
             document.getElementById(`qWeight${role}`).innerText = t[laban.weight];
             document.getElementById(`qSpace${role}`).innerText = t[laban.space];
             
-            document.getElementById(`resLaban${role}`).innerText = laban.name;
+            const resLaban = document.getElementById(`resLaban${role}`);
+            resLaban.innerText = laban.name;
+            triggerAnimation(resLaban);
+
             document.getElementById(`subLaban${role}`).innerText = laban.desc[currentLang];
 
             // Instrukcja
