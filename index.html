@@ -258,6 +258,34 @@
             50% { transform: scale(1.1); opacity: 0.8; }
         }
 
+        /* Animation for new results */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-pop {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        /* Accessibility: Reduced Motion */
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+
+            .section-emo::before {
+                animation: none !important;
+            }
+
+            .card:hover, button.gen-btn:hover {
+                transform: none !important;
+            }
+        }
+
         .emo-label {
             font-size: 0.7rem;
             text-transform: uppercase;
@@ -859,7 +887,13 @@
             charB: { emoIdx: 0, laban: null, instrKey: "" }
         };
 
-        function render() {
+        function triggerAnimation(el) {
+            el.classList.remove('animate-pop');
+            void el.offsetWidth; // trigger reflow
+            el.classList.add('animate-pop');
+        }
+
+        function render(shouldAnimate = false) {
             const t = translations[currentLang];
 
             // Static text
@@ -872,12 +906,12 @@
 
             // Update Cards if state is initialized
             if (state.charA.laban && state.charB.laban) {
-                renderCard('A', state.charA);
-                renderCard('B', state.charB);
+                renderCard('A', state.charA, shouldAnimate);
+                renderCard('B', state.charB, shouldAnimate);
             }
         }
 
-        function renderCard(role, charState) {
+        function renderCard(role, charState, shouldAnimate) {
             const t = translations[currentLang];
             const emo = emotions[charState.emoIdx];
             const laban = charState.laban;
@@ -889,7 +923,8 @@
             emoBox.className = 'section-emo';
             emoBox.classList.add(emo.class);
             
-            document.getElementById(`txtEmo${role}`).innerText = emo.name[currentLang];
+            const txtEmo = document.getElementById(`txtEmo${role}`);
+            txtEmo.innerText = emo.name[currentLang];
 
             // Ustawienia Wektorów Emocjonalnych
             document.getElementById(`vecDir${role}`).innerText = emo.vectors.kierunek[currentLang];
@@ -901,11 +936,20 @@
             document.getElementById(`qWeight${role}`).innerText = t[laban.weight];
             document.getElementById(`qSpace${role}`).innerText = t[laban.space];
             
-            document.getElementById(`resLaban${role}`).innerText = laban.name;
-            document.getElementById(`subLaban${role}`).innerText = laban.desc[currentLang];
+            const resLaban = document.getElementById(`resLaban${role}`);
+            resLaban.innerText = laban.name;
+
+            const subLaban = document.getElementById(`subLaban${role}`);
+            subLaban.innerText = laban.desc[currentLang];
 
             // Instrukcja
             document.getElementById(`instr${role}`).innerText = t[charState.instrKey];
+
+            if (shouldAnimate) {
+                triggerAnimation(txtEmo);
+                triggerAnimation(resLaban);
+                triggerAnimation(subLaban);
+            }
         }
 
         function generateScenario() {
@@ -951,7 +995,7 @@
                 instrKey: instrKeyB
             };
 
-            render();
+            render(true);
             announceScenario();
         }
 
