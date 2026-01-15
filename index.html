@@ -488,6 +488,30 @@
             }
         }
 
+        /* Animation */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-pop {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .animate-pop {
+                animation: none !important;
+                transition: none !important;
+            }
+
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -568,7 +592,7 @@
                     </div>
                 </div>
 
-                <div class="laban-result">
+                <div class="laban-result" id="boxLabanA">
                     <div class="action-name" id="resLabanA">———</div>
                     <div class="action-desc" id="subLabanA" data-i18n="placeholder_generate">Kliknij Generuj</div>
                 </div>
@@ -623,7 +647,7 @@
                     </div>
                 </div>
 
-                <div class="laban-result">
+                <div class="laban-result" id="boxLabanB">
                     <div class="action-name" id="resLabanB">———</div>
                     <div class="action-desc" id="subLabanB" data-i18n="placeholder_generate">Kliknij Generuj</div>
                 </div>
@@ -859,7 +883,13 @@
             charB: { emoIdx: 0, laban: null, instrKey: "" }
         };
 
-        function render() {
+        function triggerAnimation(el) {
+            el.classList.remove('animate-pop');
+            void el.offsetWidth; // Trigger reflow
+            el.classList.add('animate-pop');
+        }
+
+        function render(shouldAnimate = false) {
             const t = translations[currentLang];
 
             // Static text
@@ -872,12 +902,12 @@
 
             // Update Cards if state is initialized
             if (state.charA.laban && state.charB.laban) {
-                renderCard('A', state.charA);
-                renderCard('B', state.charB);
+                renderCard('A', state.charA, shouldAnimate);
+                renderCard('B', state.charB, shouldAnimate);
             }
         }
 
-        function renderCard(role, charState) {
+        function renderCard(role, charState, shouldAnimate) {
             const t = translations[currentLang];
             const emo = emotions[charState.emoIdx];
             const laban = charState.laban;
@@ -889,6 +919,8 @@
             emoBox.className = 'section-emo';
             emoBox.classList.add(emo.class);
             
+            if (shouldAnimate) triggerAnimation(emoBox);
+
             document.getElementById(`txtEmo${role}`).innerText = emo.name[currentLang];
 
             // Ustawienia Wektorów Emocjonalnych
@@ -901,6 +933,9 @@
             document.getElementById(`qWeight${role}`).innerText = t[laban.weight];
             document.getElementById(`qSpace${role}`).innerText = t[laban.space];
             
+            const labanBox = document.getElementById(`boxLaban${role}`);
+            if (shouldAnimate) triggerAnimation(labanBox);
+
             document.getElementById(`resLaban${role}`).innerText = laban.name;
             document.getElementById(`subLaban${role}`).innerText = laban.desc[currentLang];
 
@@ -951,7 +986,7 @@
                 instrKey: instrKeyB
             };
 
-            render();
+            render(true);
             announceScenario();
         }
 
@@ -985,7 +1020,7 @@
             btnPl.setAttribute('aria-pressed', lang === 'pl');
             btnEn.setAttribute('aria-pressed', lang === 'en');
 
-            render();
+            render(false);
         }
 
         // Uruchom przy starcie
