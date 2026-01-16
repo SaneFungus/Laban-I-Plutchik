@@ -122,6 +122,13 @@
             border: 1px solid #333;
         }
 
+        .control-label {
+            font-size: 0.8rem;
+            color: #888;
+            margin-bottom: 5px;
+            display: block;
+        }
+
         select {
             width: 100%;
             padding: 12px;
@@ -256,6 +263,24 @@
         @keyframes pulse {
             0%, 100% { transform: scale(1); opacity: 0.5; }
             50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-pop {
+            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *, ::before, ::after {
+                animation-duration: 0.01s !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01s !important;
+                scroll-behavior: auto !important;
+            }
         }
 
         .emo-label {
@@ -507,7 +532,7 @@
     </div>
 
     <div class="controls">
-        <label for="gameMode" style="font-size: 0.8rem; color: #888; margin-bottom: 5px; display:block;" data-i18n="label_dynamics">WYBIERZ DYNAMIKĘ RELACJI:</label>
+        <label for="gameMode" class="control-label" data-i18n="label_dynamics">WYBIERZ DYNAMIKĘ RELACJI:</label>
         <select id="gameMode">
             <option value="random" data-i18n="mode_random">CHAOS (Całkowita losowość)</option>
             <option value="contrast" data-i18n="mode_contrast">KONTRAST (Emocje przeciwne)</option>
@@ -859,7 +884,13 @@
             charB: { emoIdx: 0, laban: null, instrKey: "" }
         };
 
-        function render() {
+        function triggerAnimation(el) {
+            el.classList.remove('animate-pop');
+            void el.offsetWidth; // trigger reflow
+            el.classList.add('animate-pop');
+        }
+
+        function render(shouldAnimate = false) {
             const t = translations[currentLang];
 
             // Static text
@@ -872,12 +903,12 @@
 
             // Update Cards if state is initialized
             if (state.charA.laban && state.charB.laban) {
-                renderCard('A', state.charA);
-                renderCard('B', state.charB);
+                renderCard('A', state.charA, shouldAnimate);
+                renderCard('B', state.charB, shouldAnimate);
             }
         }
 
-        function renderCard(role, charState) {
+        function renderCard(role, charState, shouldAnimate) {
             const t = translations[currentLang];
             const emo = emotions[charState.emoIdx];
             const laban = charState.laban;
@@ -888,6 +919,10 @@
             // Reset klas i dodanie nowych
             emoBox.className = 'section-emo';
             emoBox.classList.add(emo.class);
+
+            if (shouldAnimate) {
+                triggerAnimation(emoBox);
+            }
             
             document.getElementById(`txtEmo${role}`).innerText = emo.name[currentLang];
 
@@ -906,6 +941,10 @@
 
             // Instrukcja
             document.getElementById(`instr${role}`).innerText = t[charState.instrKey];
+
+            if (shouldAnimate) {
+                 triggerAnimation(document.querySelector(`#resLaban${role}`).parentNode);
+            }
         }
 
         function generateScenario() {
@@ -951,7 +990,7 @@
                 instrKey: instrKeyB
             };
 
-            render();
+            render(true);
             announceScenario();
         }
 
@@ -985,7 +1024,7 @@
             btnPl.setAttribute('aria-pressed', lang === 'pl');
             btnEn.setAttribute('aria-pressed', lang === 'en');
 
-            render();
+            render(false);
         }
 
         // Uruchom przy starcie
