@@ -462,6 +462,23 @@
             margin: 15px 20px;
         }
 
+        /* Animacje */
+        @keyframes popIn {
+            0% { opacity: 0; transform: scale(0.95); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+
+        .animate-pop {
+            animation: popIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .animate-pop {
+                animation: none;
+                transition: none;
+            }
+        }
+
         /* Responsywność */
         @media (max-width: 768px) {
             .container {
@@ -859,7 +876,13 @@
             charB: { emoIdx: 0, laban: null, instrKey: "" }
         };
 
-        function render() {
+        function triggerAnimation(el) {
+            el.classList.remove('animate-pop');
+            void el.offsetWidth; // trigger reflow
+            el.classList.add('animate-pop');
+        }
+
+        function render(shouldAnimate = false) {
             const t = translations[currentLang];
 
             // Static text
@@ -872,12 +895,12 @@
 
             // Update Cards if state is initialized
             if (state.charA.laban && state.charB.laban) {
-                renderCard('A', state.charA);
-                renderCard('B', state.charB);
+                renderCard('A', state.charA, shouldAnimate);
+                renderCard('B', state.charB, shouldAnimate);
             }
         }
 
-        function renderCard(role, charState) {
+        function renderCard(role, charState, shouldAnimate) {
             const t = translations[currentLang];
             const emo = emotions[charState.emoIdx];
             const laban = charState.laban;
@@ -888,6 +911,15 @@
             // Reset klas i dodanie nowych
             emoBox.className = 'section-emo';
             emoBox.classList.add(emo.class);
+
+            if (shouldAnimate) {
+                triggerAnimation(emoBox);
+                const card = emoBox.parentElement;
+                const vectors = card.querySelector('.emotion-vectors');
+                const body = card.querySelector('.section-body');
+                if(vectors) triggerAnimation(vectors);
+                if(body) triggerAnimation(body);
+            }
             
             document.getElementById(`txtEmo${role}`).innerText = emo.name[currentLang];
 
@@ -951,7 +983,7 @@
                 instrKey: instrKeyB
             };
 
-            render();
+            render(true);
             announceScenario();
         }
 
@@ -985,7 +1017,7 @@
             btnPl.setAttribute('aria-pressed', lang === 'pl');
             btnEn.setAttribute('aria-pressed', lang === 'en');
 
-            render();
+            render(false);
         }
 
         // Uruchom przy starcie
