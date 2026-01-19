@@ -692,7 +692,7 @@
                 light: "Lekki",
                 direct: "Prosty",
                 indirect: "Okrężny",
-                announcement_template: "Wygenerowano nową scenę. Postać A: {emoA}, {labanA}. Postać B: {emoB}, {labanB}."
+                announcement_template: "Wygenerowano nową scenę. Postać A: {emoA}, {labanA}. Instrukcja: {instrA}. Postać B: {emoB}, {labanB}. Instrukcja: {instrB}."
             },
             en: {
                 title: "ImproLab: Counterpoint 2.0",
@@ -733,7 +733,7 @@
                 light: "Light",
                 direct: "Direct",
                 indirect: "Indirect",
-                announcement_template: "New scene generated. Character A: {emoA}, {labanA}. Character B: {emoB}, {labanB}."
+                announcement_template: "New scene generated. Character A: {emoA}, {labanA}. Instruction: {instrA}. Character B: {emoB}, {labanB}. Instruction: {instrB}."
             }
         };
 
@@ -993,14 +993,19 @@
             const t = translations[currentLang];
             const emoA = emotions[state.charA.emoIdx].name[currentLang];
             const labanA = state.charA.laban.desc[currentLang];
+            const instrA = t[state.charA.instrKey];
+
             const emoB = emotions[state.charB.emoIdx].name[currentLang];
             const labanB = state.charB.laban.desc[currentLang];
+            const instrB = t[state.charB.instrKey];
 
             const announcement = t.announcement_template
                 .replace("{emoA}", emoA)
                 .replace("{labanA}", labanA)
+                .replace("{instrA}", instrA)
                 .replace("{emoB}", emoB)
-                .replace("{labanB}", labanB);
+                .replace("{labanB}", labanB)
+                .replace("{instrB}", instrB);
 
             document.getElementById("a11y-announcer").textContent = announcement;
         }
