@@ -178,6 +178,34 @@
             outline-offset: 2px;
         }
 
+        .secondary-btn {
+            width: 100%;
+            padding: 10px;
+            background: transparent;
+            border: 1px solid #444;
+            color: var(--text-sub);
+            border-radius: 50px;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .secondary-btn:hover {
+            border-color: #666;
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .secondary-btn:focus-visible {
+             outline: 2px solid #667eea;
+             outline-offset: 1px;
+        }
+
         /* Keyboard Shortcut Hint */
         .kbd-hint {
             display: inline-block;
@@ -536,6 +564,9 @@
             <span data-i18n="btn_generate">🎭 Generuj Scenę</span>
             <span class="kbd-hint" data-i18n="key_space">Spacja</span>
         </button>
+        <button onclick="copyScenario()" class="secondary-btn" id="btnCopy">
+            <span data-i18n="btn_copy">📋 Kopiuj Scenariusz</span>
+        </button>
     </div>
 
     <div class="container">
@@ -692,7 +723,9 @@
                 light: "Lekki",
                 direct: "Prosty",
                 indirect: "Okrężny",
-                announcement_template: "Wygenerowano nową scenę. Postać A: {emoA}, {labanA}. Postać B: {emoB}, {labanB}."
+                announcement_template: "Wygenerowano nową scenę. Postać A: {emoA}, {labanA}. Postać B: {emoB}, {labanB}.",
+                btn_copy: "📋 Kopiuj Scenariusz",
+                msg_copied: "✓ Skopiowano!"
             },
             en: {
                 title: "ImproLab: Counterpoint 2.0",
@@ -733,7 +766,9 @@
                 light: "Light",
                 direct: "Direct",
                 indirect: "Indirect",
-                announcement_template: "New scene generated. Character A: {emoA}, {labanA}. Character B: {emoB}, {labanB}."
+                announcement_template: "New scene generated. Character A: {emoA}, {labanA}. Character B: {emoB}, {labanB}.",
+                btn_copy: "📋 Copy Scenario",
+                msg_copied: "✓ Copied!"
             }
         };
 
@@ -987,6 +1022,32 @@
 
             render(true);
             announceScenario();
+        }
+
+        function copyScenario() {
+            const t = translations[currentLang];
+            const select = document.getElementById("gameMode");
+            const modeText = select.options[select.selectedIndex].text;
+
+            const emoA = emotions[state.charA.emoIdx].name[currentLang];
+            const labanA = state.charA.laban.name + " (" + state.charA.laban.desc[currentLang] + ")";
+
+            const emoB = emotions[state.charB.emoIdx].name[currentLang];
+            const labanB = state.charB.laban.name + " (" + state.charB.laban.desc[currentLang] + ")";
+
+            const text = `ImproLab 2.0 - ${modeText}\n\n` +
+                         `${t.char_a}: ${emoA} + ${labanA}\n` +
+                         `${t.char_b}: ${emoB} + ${labanB}`;
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(() => {
+                    const btnSpan = document.querySelector('#btnCopy span');
+                    btnSpan.innerText = t.msg_copied;
+                    setTimeout(() => render(false), 2000);
+                }).catch(err => console.error('Copy failed', err));
+            } else {
+                console.warn("Clipboard API not supported");
+            }
         }
 
         function announceScenario() {
