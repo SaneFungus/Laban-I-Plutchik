@@ -178,6 +178,42 @@
             outline-offset: 2px;
         }
 
+        /* Secondary Button (Copy) */
+        .secondary-btn {
+            width: 100%;
+            padding: 12px;
+            background: transparent;
+            border: 1px solid #444;
+            color: var(--text-sub);
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .secondary-btn:hover {
+            border-color: #666;
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+
+        .secondary-btn:active {
+            transform: scale(0.98);
+        }
+
+        .secondary-btn:focus-visible {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
         /* Keyboard Shortcut Hint */
         .kbd-hint {
             display: inline-block;
@@ -536,6 +572,9 @@
             <span data-i18n="btn_generate">🎭 Generuj Scenę</span>
             <span class="kbd-hint" data-i18n="key_space">Spacja</span>
         </button>
+        <button onclick="copyToClipboard()" id="btn-copy" class="secondary-btn" aria-label="Copy Scenario">
+            <span data-i18n="btn_copy">📋 Kopiuj Scenariusz</span>
+        </button>
     </div>
 
     <div class="container">
@@ -662,6 +701,9 @@
                 mode_clock: "ZEGAR (Przesunięcie o 1 stopień)",
                 mode_mirror: "LUSTRO (Ta sama emocja, inny ruch)",
                 btn_generate: "🎭 Generuj Scenę",
+                btn_copy: "📋 Kopiuj Scenariusz",
+                btn_copied: "✅ Skopiowano!",
+                msg_copied_a11y: "Scenariusz skopiowany do schowka.",
                 key_space: "Spacja",
                 char_a: "Postać A",
                 char_b: "Postać B",
@@ -703,6 +745,9 @@
                 mode_clock: "CLOCK (Shift by 1 step)",
                 mode_mirror: "MIRROR (Same emotion, different movement)",
                 btn_generate: "🎭 Generate Scene",
+                btn_copy: "📋 Copy Scenario",
+                btn_copied: "✅ Copied!",
+                msg_copied_a11y: "Scenario copied to clipboard.",
                 key_space: "Space",
                 char_a: "Character A",
                 char_b: "Character B",
@@ -1003,6 +1048,44 @@
                 .replace("{labanB}", labanB);
 
             document.getElementById("a11y-announcer").textContent = announcement;
+        }
+
+        async function copyToClipboard() {
+            const t = translations[currentLang];
+
+            // Construct text
+            const emoA = emotions[state.charA.emoIdx].name[currentLang];
+            const labanA = state.charA.laban.desc[currentLang];
+            const instrA = t[state.charA.instrKey];
+
+            const emoB = emotions[state.charB.emoIdx].name[currentLang];
+            const labanB = state.charB.laban.desc[currentLang];
+            const instrB = t[state.charB.instrKey];
+
+            const text = `${t.title}\n\n${t.char_a}:\n${t.label_internal}: ${emoA}\n${t.label_external}: ${labanA}\n${instrA}\n\n${t.char_b}:\n${t.label_internal}: ${emoB}\n${t.label_external}: ${labanB}\n${instrB}`;
+
+            try {
+                await navigator.clipboard.writeText(text);
+
+                // Visual Feedback
+                const btn = document.getElementById('btn-copy');
+                const span = btn.querySelector('[data-i18n]');
+
+                span.innerHTML = t.btn_copied;
+
+                // A11y Feedback
+                const announcer = document.getElementById("a11y-announcer");
+                announcer.textContent = t.msg_copied_a11y;
+
+                setTimeout(() => {
+                    // Restore text
+                    render(false);
+                }, 2000);
+
+            } catch (err) {
+                console.error('Failed to copy', err);
+                alert('Ups! Copy failed.');
+            }
         }
 
         function setLanguage(lang) {
