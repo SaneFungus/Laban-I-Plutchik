@@ -178,6 +178,32 @@
             outline-offset: 2px;
         }
 
+        button.secondary-btn {
+            background: transparent;
+            border: 1px solid #555;
+            color: var(--text-sub);
+            padding: 10px;
+            border-radius: 50px;
+            width: 100%;
+            margin-top: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        button.secondary-btn:hover {
+            border-color: #888;
+            color: #fff;
+            background: rgba(255,255,255,0.05);
+        }
+
+        button.secondary-btn:focus-visible {
+            outline: 2px solid #667eea;
+            outline-offset: 2px;
+        }
+
         /* Keyboard Shortcut Hint */
         .kbd-hint {
             display: inline-block;
@@ -536,6 +562,9 @@
             <span data-i18n="btn_generate">🎭 Generuj Scenę</span>
             <span class="kbd-hint" data-i18n="key_space">Spacja</span>
         </button>
+        <button onclick="copyToClipboard()" id="btn-copy" class="secondary-btn">
+            <span data-i18n="btn_copy">📋 Kopiuj Scenę</span>
+        </button>
     </div>
 
     <div class="container">
@@ -662,6 +691,9 @@
                 mode_clock: "ZEGAR (Przesunięcie o 1 stopień)",
                 mode_mirror: "LUSTRO (Ta sama emocja, inny ruch)",
                 btn_generate: "🎭 Generuj Scenę",
+                btn_copy: "📋 Kopiuj Scenę",
+                msg_copied: "✅ Skopiowano!",
+                msg_copy_err: "❌ Błąd kopiowania",
                 key_space: "Spacja",
                 char_a: "Postać A",
                 char_b: "Postać B",
@@ -703,6 +735,9 @@
                 mode_clock: "CLOCK (Shift by 1 step)",
                 mode_mirror: "MIRROR (Same emotion, different movement)",
                 btn_generate: "🎭 Generate Scene",
+                btn_copy: "📋 Copy Scene",
+                msg_copied: "✅ Copied!",
+                msg_copy_err: "❌ Copy Failed",
                 key_space: "Space",
                 char_a: "Character A",
                 char_b: "Character B",
@@ -1003,6 +1038,27 @@
                 .replace("{labanB}", labanB);
 
             document.getElementById("a11y-announcer").textContent = announcement;
+        }
+
+        function copyToClipboard() {
+            const t = translations[currentLang];
+            const text = document.getElementById("a11y-announcer").textContent;
+
+            navigator.clipboard.writeText(text).then(() => {
+                const btn = document.getElementById('btn-copy');
+                const span = btn.querySelector('span');
+
+                span.innerText = t.msg_copied;
+                btn.setAttribute('aria-label', t.msg_copied);
+
+                setTimeout(() => {
+                    render(false);
+                    btn.removeAttribute('aria-label');
+                }, 2000);
+            }).catch(err => {
+                console.error('Copy failed', err);
+                alert(t.msg_copy_err);
+            });
         }
 
         function setLanguage(lang) {
